@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from 'firebaseApp';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface PostListProps {
@@ -7,8 +9,31 @@ interface PostListProps {
 
 type TabType = 'all' | 'my';
 
+interface PostProps {
+  id: string;
+  title: string;
+  email: string;
+  summary: string;
+  content: string;
+  createdAt: string;
+}
+
 export default function PostList({ hasNavigation = true }: PostListProps) {
   const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [posts, setPosts] = useState<PostProps[]>([]);
+
+  const getPosts = async () => {
+    const datas = await getDocs(collection(db, 'posts'));
+
+    datas?.forEach((doc) => {
+      const dataObj = { ...doc.data(), id: doc.id };
+      setPosts((prev) => [...prev, dataObj as PostProps]);
+    });
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
 
   return (
     <>

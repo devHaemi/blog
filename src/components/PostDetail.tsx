@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 export default function PostDetail() {
+  const params = useParams()
+  console.log(params)
+  
   return (
     <>
       <div className='post__detail'>
