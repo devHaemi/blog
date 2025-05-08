@@ -27,7 +27,11 @@ export default function PostForm() {
           title: title,
           summary: summary,
           content: content,
-          updatedAt: new Date()?.toLocaleDateString(),
+          updatedAt: new Date()?.toLocaleDateString('ko', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          }),
         });
 
         toast.success('게시글을 수정했습니다.');
@@ -37,7 +41,11 @@ export default function PostForm() {
           title: title,
           summary: summary,
           content: content,
-          createdAt: new Date()?.toLocaleDateString(),
+          createdAt: new Date()?.toLocaleDateString('ko', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          }),
           email: user?.email,
           uid: user?.uid,
         });
@@ -115,7 +123,7 @@ export default function PostForm() {
         />
       </div>
       <div className='form__block'>
-        <label htmlFor='content'>요약</label>
+        <label htmlFor='content'>내용</label>
         <textarea
           name='content'
           id='content'
