@@ -1,46 +1,64 @@
+import Loader from 'components/Loader';
+import { PostProps } from 'components/PostList';
+import AuthContext from 'context/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from 'firebaseApp';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 export default function PostDetail() {
+  const [post, setPost] = useState<PostProps | null>(null);
+
   const params = useParams();
+  const { user } = useContext(AuthContext);
+
+  const getPost = async (id: string) => {
+    if (id) {
+      const docRef = doc(db, 'posts', id);
+      const docSnap = await getDoc(docRef);
+
+      setPost({ id: docSnap?.id, ...(docSnap.data() as PostProps) });
+    }
+  };
+
+  const handleDelete = () => {};
+
+  useEffect(() => {
+    if (params?.id) getPost(params?.id);
+  }, [params?.id]);
 
   return (
     <>
       <div className='post__detail'>
-        <div className='post__box'>
-          <div className='post__title'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </div>
-          <div className='post__profile-box'>
-            <div className='post__profile' />
-            <div className='post__author-name'>패스트캠퍼스</div>
-            <div className='post__date'>2023.07.08 토요일</div>
-          </div>
-          <div className='post__utils-box'>
-            <div className='post__delete'>삭제</div>
-            <div className='post__edit'>
-              <Link to={`/posts/edit/1`}>수정</Link>
+        {post ? (
+          <div className='post__box'>
+            <div className='post__title'>{post?.title}</div>
+            <div className='post__profile-box'>
+              <div className='post__profile' />
+              <div className='post__author-name'>{post?.email}</div>
+              <div className='post__date'>{post?.createdAt}</div>
+            </div>
+            {post?.email === user?.email && (
+              <div className='post__utils-box'>
+                <div
+                  className='post__delete'
+                  role='presentation'
+                  onClick={handleDelete}
+                >
+                  삭제
+                </div>
+                <div className='post__edit'>
+                  <Link to={`/posts/edit/${post.id}`}>수정</Link>
+                </div>
+              </div>
+            )}
+            <div className='post__text post__text--pre-wrap'>
+              {post?.content}
             </div>
           </div>
-          <div className='post__text'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis
-            facilis amet ipsum maiores, explicabo laboriosam veniam ullam
-            placeat ratione. Magnam earum, ex impedit culpa veniam minus
-            accusantium amet quos reiciendis quibusdam doloribus odit obcaecati
-            atque natus, sed sit omnis, maxime quas tenetur velit nesciunt et
-            dolores! Fugiat eaque, iure eos magni at deleniti tenetur reiciendis
-            et odio tempore minus adipisci quos praesentium enim provident omnis
-            officiis labore quaerat? Aperiam, itaque laudantium. Numquam
-            perferendis eligendi molestias reprehenderit iste, itaque quibusdam.
-            Velit, cum? At illo rem explicabo beatae, commodi consectetur? Eum
-            odio earum, ipsum aliquam laudantium nemo labore similique eius
-            consequatur blanditiis explicabo perspiciatis dignissimos ullam
-            quidem temporibus officiis quibusdam sunt atque nisi nam minus quae
-            doloribus quod repellendus? Fugiat aspernatur voluptas laborum
-            tempore, totam, tempora sit soluta nesciunt eaque nemo tenetur quo
-            obcaecati officiis, ullam inventore a quis sapiente! Sint,
-            laudantium modi.
-          </div>
-        </div>
+        ) : (
+          <Loader />
+        )}
       </div>
     </>
   );
