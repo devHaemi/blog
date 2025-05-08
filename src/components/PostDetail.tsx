@@ -1,10 +1,11 @@
+import { useContext, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+
 import Loader from 'components/Loader';
 import { PostProps } from 'components/PostList';
 import AuthContext from 'context/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
 import { db } from 'firebaseApp';
-import { useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
 
 export default function PostDetail() {
   const [post, setPost] = useState<PostProps | null>(null);
@@ -21,7 +22,9 @@ export default function PostDetail() {
     }
   };
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    console.log('deleted');
+  };
 
   useEffect(() => {
     if (params?.id) getPost(params?.id);

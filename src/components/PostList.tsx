@@ -1,8 +1,9 @@
-import AuthContext from 'context/AuthContext';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from 'firebaseApp';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+
+import AuthContext from 'context/AuthContext';
+import { db } from 'firebaseApp';
 
 interface PostListProps {
   hasNavigation?: boolean;
@@ -17,6 +18,8 @@ export interface PostProps {
   summary: string;
   content: string;
   createdAt: string;
+  updatedAt?: string;
+  uid: string;
 }
 
 export default function PostList({ hasNavigation = true }: PostListProps) {
@@ -75,9 +78,9 @@ export default function PostList({ hasNavigation = true }: PostListProps) {
               {post?.email === user?.email && (
                 <div className='post__utils-box'>
                   <div className='post__delete'>삭제</div>
-                  <Link to={`/posts/edit/${post.id}`} className='post__edit'>
-                    수정
-                  </Link>
+                  <div className='post__edit'>
+                    <Link to={`/posts/edit/${post.id}`}>수정</Link>
+                  </div>
                 </div>
               )}
             </div>
