@@ -11,8 +11,6 @@ export default function Footer() {
 
   const context = useContext(ThemeContext);
 
-  console.log(context);
-
   return (
     <footer>
       <Link to='/posts/new'>글쓰기</Link>

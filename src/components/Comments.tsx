@@ -1,4 +1,9 @@
-import { useEffect, useState } from 'react';
+import { PostProps } from 'components/PostList';
+import AuthContext from 'context/AuthContext';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from 'firebaseApp';
+import { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 
 const COMMENTS = [
   {
@@ -9,8 +14,13 @@ const COMMENTS = [
   },
 ];
 
-export default function Comments() {
+interface CommentProps {
+  post: PostProps;
+}
+
+export default function Comments({ post }: CommentProps) {
   const [comment, setComment] = useState<string>('');
+  const { user } = useContext(AuthContext);
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {
@@ -22,11 +32,43 @@ export default function Comments() {
     }
   };
 
-  useEffect(() => {}, []);
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      if (post && post?.id) {
+        const postRef = doc(db, 'posts', post.id);
+
+        if (user?.uid) {
+          const commentObj = {
+            comment: comment,
+            uid: user.uid,
+            email: user.email,
+            createdAt: new Date().toLocaleDateString('ko', {
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            }),
+          };
+
+          await updateDoc(postRef, {
+            comment: commentObj,
+            updatedAt: new Date().toLocaleDateString('ko', {
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+            }),
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className='comments'>
-      <form className='comments__form'>
+      <form className='comments__form' onSubmit={onSubmit}>
         <div className='form__block'>
           <label htmlFor='comment'>댓글 입력</label>
           <textarea
