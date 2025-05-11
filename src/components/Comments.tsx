@@ -1,6 +1,6 @@
 import { PostProps } from 'components/PostList';
 import AuthContext from 'context/AuthContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { db } from 'firebaseApp';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -52,7 +52,7 @@ export default function Comments({ post }: CommentProps) {
           };
 
           await updateDoc(postRef, {
-            comment: commentObj,
+            comment: arrayUnion(commentObj),
             updatedAt: new Date().toLocaleDateString('ko', {
               hour: '2-digit',
               minute: '2-digit',
@@ -61,8 +61,11 @@ export default function Comments({ post }: CommentProps) {
           });
         }
       }
-    } catch (error) {
-      console.log(error);
+      toast.success('댓글을 생성했습니다.');
+      setComment('');
+    } catch (err: any) {
+      console.log(err);
+      toast.error(err?.code);
     }
   };
 
