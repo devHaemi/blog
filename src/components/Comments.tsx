@@ -5,20 +5,12 @@ import { db } from 'firebaseApp';
 import { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
-const COMMENTS = [
-  {
-    id: 1,
-    email: 'dfsdf@gmail.com',
-    createdAt: '2025.5.9',
-    content: '코멘트 테스트',
-  },
-];
-
 interface CommentProps {
   post: PostProps;
+  getPost: (id: string) => Promise<void>;
 }
 
-export default function Comments({ post }: CommentProps) {
+export default function Comments({ post, getPost }: CommentProps) {
   const [comment, setComment] = useState<string>('');
   const { user } = useContext(AuthContext);
 
@@ -41,7 +33,7 @@ export default function Comments({ post }: CommentProps) {
 
         if (user?.uid) {
           const commentObj = {
-            comment: comment,
+            content: comment,
             uid: user.uid,
             email: user.email,
             createdAt: new Date().toLocaleDateString('ko', {
@@ -52,13 +44,15 @@ export default function Comments({ post }: CommentProps) {
           };
 
           await updateDoc(postRef, {
-            comment: arrayUnion(commentObj),
+            comments: arrayUnion(commentObj),
             updatedAt: new Date().toLocaleDateString('ko', {
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit',
             }),
           });
+
+          await getPost(post.id);
         }
       }
       toast.success('댓글을 생성했습니다.');
@@ -87,16 +81,19 @@ export default function Comments({ post }: CommentProps) {
         </div>
       </form>
       <div className='comments__list'>
-        {COMMENTS.map((comment) => (
-          <div key={comment.id} className='comment__box'>
-            <div className='comment__profile-box'>
-              <div className='comment__email'>{comment.email}</div>
-              <div className='comment__date'>{comment.createdAt}</div>
-              <div className='comment__delete'>삭제</div>
+        {post?.comments
+          ?.slice(0)
+          ?.reverse()
+          .map((comment) => (
+            <div key={comment.createdAt} className='comment__box'>
+              <div className='comment__profile-box'>
+                <div className='comment__email'>{comment.email}</div>
+                <div className='comment__date'>{comment.createdAt}</div>
+                <div className='comment__delete'>삭제</div>
+              </div>
+              <div className='comment__text'>{comment.content}</div>
             </div>
-            <div className='comment__text'>{comment.content}</div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
