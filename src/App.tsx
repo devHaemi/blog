@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Router from './components/Router';
-import { app, db } from 'firebaseApp';
+import { app } from 'firebaseApp';
 import Loader from 'components/Loader';
 import ThemeContext from 'context/ThemeContext';
 
