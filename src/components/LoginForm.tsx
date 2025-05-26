@@ -10,7 +10,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState<string>('');
   const navigate = useNavigate();
 
-  const onsubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onsubmit = async (e: React.t<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
